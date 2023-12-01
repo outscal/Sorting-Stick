@@ -39,6 +39,7 @@ namespace Gameplay
 
             void processSortThreadState();
             void processBubbleSort();
+            void processInsertionSort();
 
             bool isCollectionSorted();
             void destroy();

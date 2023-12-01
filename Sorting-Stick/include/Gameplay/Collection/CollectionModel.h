@@ -26,7 +26,7 @@ namespace Gameplay
             const sf::Color element_color = sf::Color::White;
             const sf::Color processing_element_color = sf::Color::Red;
 
-            const long operation_delay = 30;
+            const long operation_delay = 100;
 
             CollectionModel();
             ~CollectionModel();

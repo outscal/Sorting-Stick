@@ -120,6 +120,37 @@ namespace Gameplay
 			}
 		}
 
+		void CollectionController::processInsertionSort()
+		{
+			for (int i = 1; i < elements.size(); ++i) 
+			{
+				int j = i - 1;
+				number_of_array_access++;
+
+				Element* key = elements[i];
+				key->element_view->setFillColor(collection_model->processing_element_color);
+
+				while (j >= 0 && elements[j]->data > key->data)
+				{
+					number_of_array_access += 4;
+					number_of_comparisons++;
+
+					elements[j + 1] = elements[j];
+					elements[j] = key;
+
+					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+					updateElementsPosition();
+					--j;
+				}
+
+				key->element_view->setFillColor(collection_model->element_color);
+				elements[j + 1] = key;
+
+				updateElementsPosition();
+				number_of_array_access++;
+			}
+		}
+
 		void CollectionController::resetElementsColor()
 		{
 			for (int i = 0; i < elements.size(); i++) elements[i]->element_view->setFillColor(collection_model->element_color);
@@ -150,6 +181,10 @@ namespace Gameplay
 			{
 			case Gameplay::Collection::SortType::BUBBLE_SORT:
 				sort_thread = std::thread(&CollectionController::processBubbleSort, this);	
+				break;
+
+			case Gameplay::Collection::SortType::INSERTION_SORT:
+				sort_thread = std::thread(&CollectionController::processInsertionSort, this);
 				break;
 			}
 		}
