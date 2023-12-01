@@ -37,10 +37,14 @@ namespace Gameplay
             void resetElementsColor();
             void resetVariables();
 
+            void merge(int left, int mid, int right);
+            void mergeSort(int left, int right);
+
             void processSortThreadState();
             void processBubbleSort();
             void processInsertionSort();
             void processSelectionSort();
+            void processMergeSort();
 
             bool isCollectionSorted();
             void destroy();

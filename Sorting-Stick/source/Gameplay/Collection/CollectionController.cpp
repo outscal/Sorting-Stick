@@ -98,6 +98,61 @@ namespace Gameplay
 			if (sort_thread.joinable() && isCollectionSorted()) sort_thread.join();
 		}
 
+		void CollectionController::merge(int left, int mid, int right)
+		{
+			int k = mid + 1;
+			number_of_array_access += 2;
+			number_of_comparisons++;
+
+			if (elements[mid]->data <= elements[k]->data) return;
+
+			while (left <= mid && k <= right)
+			{
+				elements[left]->element_view->setFillColor(collection_model->processing_element_color);
+				elements[k]->element_view->setFillColor(collection_model->processing_element_color);
+				
+				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+				elements[left]->element_view->setFillColor(collection_model->element_color);
+				elements[k]->element_view->setFillColor(collection_model->element_color);
+
+				number_of_array_access += 2;
+				number_of_comparisons++;
+
+				if (elements[left]->data <= elements[k]->data) left++;
+				else 
+				{
+					Element* key = elements[k];
+					for (int i = k; i != left; --i)
+					{
+						elements[i] = elements[i - 1];
+						number_of_array_access += 2;
+					}
+
+					elements[left] = key;
+					updateElementsPosition();
+
+					left++;
+					mid++;
+					k++;
+				}
+			}
+		}
+
+		void CollectionController::mergeSort(int left, int right)
+		{
+			if (left >= right) return;
+			int mid = left + (right - left) / 2;
+
+			mergeSort(left, mid);
+			mergeSort(mid + 1, right);
+			merge(left, mid, right);
+		}
+
+		void CollectionController::processMergeSort()
+		{
+			mergeSort(0, elements.size() - 1);
+		}
+
 		void CollectionController::processBubbleSort()
 		{
 			for (int j = 0; j < elements.size(); j++)
@@ -222,6 +277,10 @@ namespace Gameplay
 
 			case Gameplay::Collection::SortType::SELECTION_SORT:
 				sort_thread = std::thread(&CollectionController::processSelectionSort, this);
+				break;
+
+			case Gameplay::Collection::SortType::MERGE_SORT:
+				sort_thread = std::thread(&CollectionController::processMergeSort, this);
 				break;
 			}
 		}
