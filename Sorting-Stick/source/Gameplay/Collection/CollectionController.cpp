@@ -151,6 +151,39 @@ namespace Gameplay
 			}
 		}
 
+		void CollectionController::processSelectionSort()
+		{
+			for (int i = 0; i < elements.size() - 1; ++i)
+			{
+				int min_index = i;
+				elements[i]->element_view->setFillColor(collection_model->placement_position_element_color);
+
+				for (int j = i + 1; j < elements.size(); ++j) 
+				{
+					number_of_array_access += 2;
+					number_of_comparisons++;
+
+					elements[j]->element_view->setFillColor(collection_model->processing_element_color);
+					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+
+					if (elements[j]->data < elements[min_index]->data)
+					{
+						if(min_index != i) elements[min_index]->element_view->setFillColor(collection_model->element_color);
+						elements[j]->element_view->setFillColor(collection_model->selected_element_color);
+						min_index = j;
+					}
+					if(min_index != j) elements[j]->element_view->setFillColor(collection_model->element_color);
+				}
+
+				number_of_array_access += 3;
+				std::swap(elements[min_index], elements[i]);
+
+				elements[i]->element_view->setFillColor(collection_model->element_color);
+				elements[min_index]->element_view->setFillColor(collection_model->element_color);
+				updateElementsPosition();
+			}
+		}
+
 		void CollectionController::resetElementsColor()
 		{
 			for (int i = 0; i < elements.size(); i++) elements[i]->element_view->setFillColor(collection_model->element_color);
@@ -185,6 +218,10 @@ namespace Gameplay
 
 			case Gameplay::Collection::SortType::INSERTION_SORT:
 				sort_thread = std::thread(&CollectionController::processInsertionSort, this);
+				break;
+
+			case Gameplay::Collection::SortType::SELECTION_SORT:
+				sort_thread = std::thread(&CollectionController::processSelectionSort, this);
 				break;
 			}
 		}
