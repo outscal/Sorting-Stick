@@ -148,9 +148,58 @@ namespace Gameplay
 			merge(left, mid, right);
 		}
 
+		int CollectionController::partition(int left, int right)
+		{
+			elements[right]->element_view->setFillColor(collection_model->placement_position_element_color);
+			int i = left - 1;
+
+			for (int j = left; j < right; ++j)
+			{
+				elements[j]->element_view->setFillColor(collection_model->processing_element_color);
+				number_of_array_access += 2;
+				number_of_comparisons++;
+
+				if (elements[j]->data < elements[right]->data)
+				{
+					++i;
+					elements[i]->element_view->setFillColor(collection_model->processing_element_color);
+					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+					std::swap(elements[i], elements[j]);
+					updateElementsPosition();
+					number_of_array_access += 3;
+
+					elements[i]->element_view->setFillColor(collection_model->element_color);
+				}
+
+				elements[j]->element_view->setFillColor(collection_model->element_color);
+			}
+
+			elements[right]->element_view->setFillColor(collection_model->element_color);
+			std::swap(elements[i + 1], elements[right]);
+			updateElementsPosition();
+			number_of_array_access += 3;
+			return i + 1;
+		}
+
+		void CollectionController::quickSort(int left, int right)
+		{
+			if (left < right) 
+			{
+				int pivot_index = partition(left, right);
+
+				quickSort(left, pivot_index - 1);
+				quickSort(pivot_index + 1, right);
+			}
+		}
+
 		void CollectionController::processMergeSort()
 		{
 			mergeSort(0, elements.size() - 1);
+		}
+
+		void CollectionController::processQuickSort()
+		{
+			quickSort(0, elements.size() - 1);
 		}
 
 		void CollectionController::processBubbleSort()
@@ -281,6 +330,10 @@ namespace Gameplay
 
 			case Gameplay::Collection::SortType::MERGE_SORT:
 				sort_thread = std::thread(&CollectionController::processMergeSort, this);
+				break;
+
+			case Gameplay::Collection::SortType::QUICK_SORT:
+				sort_thread = std::thread(&CollectionController::processQuickSort, this);
 				break;
 			}
 		}
