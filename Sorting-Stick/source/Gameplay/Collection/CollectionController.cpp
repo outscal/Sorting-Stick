@@ -192,6 +192,47 @@ namespace Gameplay
 			}
 		}
 
+		void CollectionController::countSort(int exponent)
+		{
+			std::vector<Element*> output(elements.size());
+			std::vector<int> count(10, 0);
+
+			for (int i = 0; i < elements.size(); ++i)
+			{
+				int digit = (elements[i]->data / exponent) % 10;
+				count[digit]++;
+				number_of_array_access++;
+			}
+
+			for (int i = 1; i < 10; ++i) count[i] += count[i - 1];
+			for (int i = elements.size() - 1; i >= 0; --i)
+			{
+				elements[i]->element_view->setFillColor(collection_model->processing_element_color);
+				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+				elements[i]->element_view->setFillColor(collection_model->element_color);
+
+				int digit = (elements[i]->data / exponent) % 10;
+				output[count[digit] - 1] = elements[i];
+				count[digit]--;
+				number_of_array_access++;
+			}
+
+			for (int i = 0; i < elements.size(); ++i)
+			{
+				elements[i] = output[i];
+				updateElementsPosition();
+			}
+		}
+
+		void CollectionController::radixSort()
+		{
+			int maxElement = INT_MIN;
+			const int size = elements.size();
+
+			for (int i = 0; i < size; ++i) maxElement = std::max(elements[i]->data, maxElement);
+			for (int exponent = 1; maxElement / exponent > 0; exponent *= 10) countSort(exponent);
+		}
+
 		void CollectionController::processMergeSort()
 		{
 			mergeSort(0, elements.size() - 1);
@@ -200,6 +241,11 @@ namespace Gameplay
 		void CollectionController::processQuickSort()
 		{
 			quickSort(0, elements.size() - 1);
+		}
+
+		void CollectionController::processRadixSort()
+		{
+			radixSort();
 		}
 
 		void CollectionController::processBubbleSort()
@@ -334,6 +380,10 @@ namespace Gameplay
 
 			case Gameplay::Collection::SortType::QUICK_SORT:
 				sort_thread = std::thread(&CollectionController::processQuickSort, this);
+				break;
+
+			case Gameplay::Collection::SortType::RADIX_SORT:
+				sort_thread = std::thread(&CollectionController::processRadixSort, this);
 				break;
 			}
 		}

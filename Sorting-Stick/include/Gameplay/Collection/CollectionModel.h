@@ -28,7 +28,7 @@ namespace Gameplay
             const sf::Color placement_position_element_color = sf::Color::Green;
             const sf::Color selected_element_color = sf::Color::Blue;
 
-            const long operation_delay = 500;
+            const long operation_delay = 200;
 
             CollectionModel();
             ~CollectionModel();
