@@ -1,6 +1,6 @@
 #pragma once
-#include "Gameplay/Collection/CollectionModel.h"
-#include "Gameplay/Collection/CollectionController.h"
+#include "Gameplay/Collection/StickCollectionModel.h"
+#include "Gameplay/Collection/StickCollectionController.h"
 
 namespace Gameplay
 {
@@ -11,7 +11,7 @@ namespace Gameplay
 	{
 	private:
 		GameplayController* gameplay_controller;
-		CollectionController* collection_controller;
+		StickCollectionController* collection_controller;
 
 	public:
 		GameplayService();
@@ -27,5 +27,9 @@ namespace Gameplay
 		Collection::SortType getSortType();
 		int getNumberOfComparisons();
 		int getNumberOfArrayAccess();
+		int getNumberOfSticks();
+		int getDelayMilliseconds();
+		sf::String getTimeComplexity();
 	};
 }
+

@@ -11,7 +11,7 @@ namespace UI
 	private:
 		SplashScreen::SplashScreenUIController* splash_screen_controller;
 		MainMenu::MainMenuUIController* main_menu_controller;
-		GameplayUI::GameplayUIController* gameplay_ui_controller;
+		GameplayUI::GameplayUIController* gameplay_controller;
 
 		void createControllers();
 		void initializeControllers();

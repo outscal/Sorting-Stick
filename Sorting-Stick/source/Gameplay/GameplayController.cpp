@@ -1,8 +1,18 @@
 #include "Gameplay/GameplayController.h"
 #include "Gameplay/GameplayView.h"
 
+
 namespace Gameplay
 {
+
+
+
+
+	void GameplayController::destroy()
+	{
+		delete(gameplay_view);
+	}
+
 	GameplayController::GameplayController()
 	{
 		gameplay_view = new GameplayView();
@@ -28,11 +38,9 @@ namespace Gameplay
 	{
 		gameplay_view->render();
 	}
-	
-	void GameplayController::reset() { }
 
-	void GameplayController::destroy()
+	void GameplayController::reset()
 	{
-		delete (gameplay_view);
 	}
+
 }

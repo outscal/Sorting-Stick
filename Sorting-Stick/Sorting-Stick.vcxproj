@@ -136,9 +136,9 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="source\Event\EventService.cpp" />
-    <ClCompile Include="source\Gameplay\Collection\CollectionController.cpp" />
-    <ClCompile Include="source\Gameplay\Collection\CollectionModel.cpp" />
-    <ClCompile Include="source\Gameplay\Collection\CollectionView.cpp" />
+    <ClCompile Include="source\Gameplay\Collection\StickCollectionController.cpp" />
+    <ClCompile Include="source\Gameplay\Collection\StickCollectionModel.cpp" />
+    <ClCompile Include="source\Gameplay\Collection\StickCollectionView.cpp" />
     <ClCompile Include="source\Gameplay\GameplayController.cpp" />
     <ClCompile Include="source\Gameplay\GameplayService.cpp" />
     <ClCompile Include="source\Gameplay\GameplayView.cpp" />
@@ -160,10 +160,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Event\EventService.h" />
-    <ClInclude Include="include\Gameplay\Collection\CollectionController.h" />
-    <ClInclude Include="include\Gameplay\Collection\CollectionModel.h" />
-    <ClInclude Include="include\Gameplay\Collection\CollectionView.h" />
-    <ClInclude Include="include\Gameplay\Collection\Element.h" />
+    <ClInclude Include="include\Gameplay\Collection\Stick.h" />
+    <ClInclude Include="include\Gameplay\Collection\StickCollectionController.h" />
+    <ClInclude Include="include\Gameplay\Collection\StickCollectionModel.h" />
+    <ClInclude Include="include\Gameplay\Collection\StickCollectionView.h" />
     <ClInclude Include="include\Gameplay\GameplayController.h" />
     <ClInclude Include="include\Gameplay\GameplayService.h" />
     <ClInclude Include="include\Gameplay\GameplayView.h" />
