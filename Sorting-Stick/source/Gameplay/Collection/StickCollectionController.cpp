@@ -121,6 +121,23 @@ namespace Gameplay
 					updateStickPosition();
 				}
 			}
+			setCompletedColor();
+		}
+
+		void StickCollectionController::setCompletedColor()
+		{
+
+			SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
+
+			for (int i = 0; i < sticks.size(); ++i)
+			{
+				sound->playSound(SoundType::COMPARE_SFX);
+				sticks[i]->stick_view->setFillColor(collection_model->placement_position_element_color);
+
+				// Delay to visualize the final color change
+				std::this_thread::sleep_for(std::chrono::milliseconds(color_delay));
+
+			}
 		}
 
 		void StickCollectionController::shuffleSticks()
@@ -156,6 +173,7 @@ namespace Gameplay
 
 		void StickCollectionController::reset()
 		{
+			color_delay = 0;
 			current_operation_delay = 0;
 			if (sort_thread.joinable()) sort_thread.join();
 
@@ -167,6 +185,7 @@ namespace Gameplay
 		void StickCollectionController::sortElements(SortType sort_type)
 		{
 			current_operation_delay = collection_model->operation_delay;
+			color_delay = collection_model->initial_color_delay;
 			this->sort_type = sort_type;
 
 			switch (sort_type)
