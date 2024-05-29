@@ -104,7 +104,8 @@ namespace Gameplay
 			SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
 			for (int j = 0; j < sticks.size(); j++)
 			{
-				for (int i = 1; i < sticks.size(); i++)
+				bool swapped = false;  // To track if a swap was made
+				for (int i = 1; i < sticks.size() - j; i++)  // Reduce the range each pass
 				{
 					number_of_array_access += 2;
 					number_of_comparisons++;
@@ -113,20 +114,34 @@ namespace Gameplay
 					sticks[i - 1]->stick_view->setFillColor(collection_model->processing_element_color);
 					sticks[i]->stick_view->setFillColor(collection_model->processing_element_color);
 
-					if (sticks[i - 1]->data > sticks[i]->data) std::swap(sticks[i - 1], sticks[i]);
+					if (sticks[i - 1]->data > sticks[i]->data) {
+						std::swap(sticks[i - 1], sticks[i]);
+						swapped = true;  // Set swapped to true if there was a swap
+					}
 					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
 
 					sticks[i - 1]->stick_view->setFillColor(collection_model->element_color);
 					sticks[i]->stick_view->setFillColor(collection_model->element_color);
 					updateStickPosition();
 				}
+				// Set the last sorted stick to green
+				if (sticks.size() - j - 1 >= 0) {
+					sticks[sticks.size() - j - 1]->stick_view->setFillColor(collection_model->placement_position_element_color);
+				}
+				// If no swaps were made, the array is already sorted
+				if (!swapped)
+					break;
 			}
+
 			setCompletedColor();
 		}
 
 		void StickCollectionController::setCompletedColor()
 		{
-
+			for (int k = 0; k < sticks.size(); k++)
+			{
+				sticks[k]->stick_view->setFillColor(collection_model->element_color);
+			}
 			SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
 
 			for (int i = 0; i < sticks.size(); ++i)
