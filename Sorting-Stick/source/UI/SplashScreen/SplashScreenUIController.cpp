@@ -59,10 +59,10 @@ namespace UI
 
         sf::Vector2f SplashScreenUIController::getLogoPosition()
         {
-            sf::RenderWindow* game_window = ServiceLocator::getInstance()->getGraphicService()->getGameWindow();
+            GraphicService* graphic_service = ServiceLocator::getInstance()->getGraphicService();
 
-            float x_position = (game_window->getSize().x - logo_width) / 2.0f;
-            float y_position = (game_window->getSize().y - logo_height) / 2.0f;
+            float x_position = (graphic_service->getReferenceResolution().x - logo_width) / 2.0f;
+            float y_position = (graphic_service->getReferenceResolution().y - logo_height) / 2.0f;
 
             return sf::Vector2f(x_position, y_position);
         }

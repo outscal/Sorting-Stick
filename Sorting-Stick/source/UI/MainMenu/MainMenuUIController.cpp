@@ -15,6 +15,7 @@ namespace UI
         using namespace Main;
         using namespace UIElement;
         using namespace Sound;
+        using namespace Graphics;
 
         MainMenuUIController::MainMenuUIController()
         {
@@ -52,9 +53,9 @@ namespace UI
 
         void MainMenuUIController::initializeBackgroundImage()
         {
-            sf::RenderWindow* game_window = ServiceLocator::getInstance()->getGraphicService()->getGameWindow();
+            GraphicService* graphic_service = ServiceLocator::getInstance()->getGraphicService();
 
-            background_image->initialize(Config::background_texture_path, game_window->getSize().x, game_window->getSize().y, sf::Vector2f(0, 0));
+            background_image->initialize(Config::background_texture_path, graphic_service->getReferenceResolution().x, graphic_service->getReferenceResolution().y, sf::Vector2f(0, 0));
             background_image->setImageAlpha(background_alpha);
         }
 
