@@ -305,7 +305,7 @@ namespace Gameplay
 				break;
 			case Gameplay::Collection::SortType::SELECTION_SORT:
 				time_complexity = "O(n^2)";
-				sort_thread = std::thread(&StickCollectionController::processInsertionSort, this);
+				sort_thread = std::thread(&StickCollectionController::processSelectionSort, this);
 				break;
 			}
 		}
