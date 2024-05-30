@@ -16,6 +16,7 @@ namespace Graphics
 	{
 		game_window = createGameWindow();
 		setFrameRate(frame_rate);
+		setReferenceResolution();
 	}
 
 	sf::RenderWindow* GraphicService::createGameWindow()
@@ -27,6 +28,16 @@ namespace Graphics
 	void GraphicService::configureVideoMode()
 	{
 		video_mode = *(new sf::VideoMode(game_window_width, game_window_height, sf::VideoMode::getDesktopMode().bitsPerPixel));
+	}
+
+	void GraphicService::setReferenceResolution()
+	{
+		reference_resolution = sf::Vector2f(game_window_width, game_window_height);
+	}
+
+	sf::Vector2f GraphicService::getReferenceResolution()
+	{
+		return reference_resolution;
 	}
 
 	void GraphicService::onDestroy()

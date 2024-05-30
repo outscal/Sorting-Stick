@@ -17,6 +17,9 @@ namespace UI
 			sf::RenderWindow* game_window;
 			UIState ui_state;
 
+			sf::Vector2f getPositionForCurrentResolution(sf::Vector2f position);
+			sf::Vector2f getScaleForCurrentResolution(float width, float height);
+
 		public:
 			UIView();
 			virtual ~UIView();
