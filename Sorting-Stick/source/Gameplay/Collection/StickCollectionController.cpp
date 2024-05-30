@@ -178,6 +178,41 @@ namespace Gameplay
 			setCompletedColor();
 		}
 
+		void StickCollectionController::processSelectionSort()
+		{
+			for (int i = 0; i < sticks.size() - 1; ++i)
+			{
+				int min_index = i;
+				sticks[i]->stick_view->setFillColor(collection_model->placement_position_element_color);
+
+				for (int j = i + 1; j < sticks.size(); ++j)
+				{
+					number_of_array_access += 2;
+					number_of_comparisons++;
+
+					sticks[j]->stick_view->setFillColor(collection_model->processing_element_color);
+					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+
+					if (sticks[j]->data < sticks[min_index]->data)
+					{
+						if (min_index != i) sticks[min_index]->stick_view->setFillColor(collection_model->element_color);
+						sticks[j]->stick_view->setFillColor(collection_model->selected_element_color);
+						min_index = j;
+					}
+					if (min_index != j) sticks[j]->stick_view->setFillColor(collection_model->element_color);
+				}
+
+				number_of_array_access += 3;
+				std::swap(sticks[min_index], sticks[i]);
+
+				sticks[i]->stick_view->setFillColor(collection_model->element_color);
+				sticks[min_index]->stick_view->setFillColor(collection_model->element_color);
+				updateStickPosition();
+			}
+
+			setCompletedColor();
+		}
+
 		void StickCollectionController::setCompletedColor()
 		{
 			for (int k = 0; k < sticks.size(); k++)
@@ -258,6 +293,10 @@ namespace Gameplay
 				sort_thread = std::thread(&StickCollectionController::processBubbleSort, this);
 				break;
 			case Gameplay::Collection::SortType::INSERTION_SORT:
+				time_complexity = "O(n^2)";
+				sort_thread = std::thread(&StickCollectionController::processInsertionSort, this);
+				break;
+			case Gameplay::Collection::SortType::SELECTION_SORT:
 				time_complexity = "O(n^2)";
 				sort_thread = std::thread(&StickCollectionController::processInsertionSort, this);
 				break;
