@@ -69,13 +69,13 @@
     <ClCompile Include="source\Gameplay\GameplayView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Gameplay\Collection\CollectionController.cpp">
+    <ClCompile Include="source\Gameplay\Collection\StickCollectionController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Gameplay\Collection\CollectionView.cpp">
+    <ClCompile Include="source\Gameplay\Collection\StickCollectionModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Gameplay\Collection\CollectionModel.cpp">
+    <ClCompile Include="source\Gameplay\Collection\StickCollectionView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\UI\UIElement\RectangleShapeView.cpp">
@@ -140,16 +140,16 @@
     <ClInclude Include="include\Gameplay\GameplayView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Gameplay\Collection\CollectionController.h">
+    <ClInclude Include="include\Gameplay\Collection\StickCollectionController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Gameplay\Collection\CollectionView.h">
+    <ClInclude Include="include\Gameplay\Collection\StickCollectionModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Gameplay\Collection\CollectionModel.h">
+    <ClInclude Include="include\Gameplay\Collection\StickCollectionView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Gameplay\Collection\Element.h">
+    <ClInclude Include="include\Gameplay\Collection\Stick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\UI\UIElement\RectangleShapeView.h">

@@ -56,7 +56,7 @@ namespace Main
 		game_window->display();
 	}
 
-	void GameService::destroy() { service_locator->deleteServiceLocator(); }
+	void GameService::destroy() {  }
 
 	void GameService::setGameState(GameState new_state) { current_state = new_state; }
 
