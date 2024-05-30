@@ -153,6 +153,8 @@ namespace Gameplay
 				std::this_thread::sleep_for(std::chrono::milliseconds(color_delay));
 
 			}
+
+			sound->playSound(SoundType::SCREAM);
 		}
 
 		void StickCollectionController::shuffleSticks()
