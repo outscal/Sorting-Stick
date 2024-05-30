@@ -36,12 +36,14 @@ namespace UI
 
 		void RectangleShapeView::setSize(sf::Vector2f rectangle_size)
 		{
-			rectangle_shape.setSize(rectangle_size);
+			sf::Vector2f adjusted_dimentions = getScaleForCurrentResolution(rectangle_size.x, rectangle_size.y);
+
+			rectangle_shape.setSize(adjusted_dimentions);
 		}
 
 		void RectangleShapeView::setPosition(sf::Vector2f rectangle_position)
 		{
-			rectangle_shape.setPosition(rectangle_position);
+			rectangle_shape.setPosition(getPositionForCurrentResolution(rectangle_position));
 		}
 
 		void RectangleShapeView::setFillColor(sf::Color fill_color)

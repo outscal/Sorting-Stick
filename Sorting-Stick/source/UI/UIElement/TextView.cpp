@@ -76,7 +76,7 @@ namespace UI
 
 		void TextView::setTextPosition(sf::Vector2f position)
 		{
-			text.setPosition(position);
+			text.setPosition(getPositionForCurrentResolution(position));
 		}
 
 		void TextView::setTextColor(sf::Color color)

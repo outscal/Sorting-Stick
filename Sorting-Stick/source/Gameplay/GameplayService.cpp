@@ -9,7 +9,7 @@ namespace Gameplay
 	GameplayService::GameplayService()
 	{
 		gameplay_controller = new GameplayController();
-		collection_controller = new CollectionController();
+		collection_controller = new StickCollectionController();
 	}
 
 	GameplayService::~GameplayService()
@@ -20,7 +20,7 @@ namespace Gameplay
 
 	void GameplayService::initialize()
 	{
-		std::srand(static_cast<unsigned int>(std::time(nullptr)));
+		std::srand(static_cast<unsigned int>(std::time(nullptr))); //set seed
 		gameplay_controller->initialize();
 		collection_controller->initialize();
 	}
@@ -61,5 +61,20 @@ namespace Gameplay
 	int GameplayService::getNumberOfArrayAccess()
 	{
 		return collection_controller->getNumberOfArrayAccess();
+	}
+
+	int GameplayService::getNumberOfSticks()
+	{
+		return collection_controller->getNumberOfSticks();
+	}
+
+	int GameplayService::getDelayMilliseconds()
+	{
+		return collection_controller->getDelayMilliseconds();
+	}
+
+	sf::String GameplayService::getTimeComplexity()
+	{
+		return collection_controller->getTimeComplexity();
 	}
 }
