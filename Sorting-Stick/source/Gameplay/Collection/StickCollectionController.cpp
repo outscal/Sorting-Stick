@@ -355,33 +355,45 @@ namespace Gameplay
 
 		void StickCollectionController::countSort(int exponent)
 		{
+			SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
 			std::vector<Stick*> output(sticks.size());
 			std::vector<int> count(10, 0);
 
-			for (int i = 0; i < sticks.size(); ++i)
-			{
+			// Process each element to count digits
+			for (int i = 0; i < sticks.size(); ++i) {
+				sound->playSound(SoundType::COMPARE_SFX);
 				int digit = (sticks[i]->data / exponent) % 10;
 				count[digit]++;
 				number_of_array_access++;
+				sticks[i]->stick_view->setFillColor(collection_model->processing_element_color);
+				updateStickPosition();
+				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay)); // Delay for visual processing
+				sticks[i]->stick_view->setFillColor(collection_model->element_color);  // Reset color after processing
 			}
 
-			for (int i = 1; i < 10; ++i) count[i] += count[i - 1];
-			for (int i = sticks.size() - 1; i >= 0; --i)
-			{
-				sticks[i]->stick_view->setFillColor(collection_model->processing_element_color);
-				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
-				sticks[i]->stick_view->setFillColor(collection_model->element_color);
+			// Accumulate the count array
+			for (int i = 1; i < 10; ++i) {
+				count[i] += count[i - 1];
+			}
 
+			// Sorting based on the current digit
+			for (int i = sticks.size() - 1; i >= 0; --i) {
+				sound->playSound(SoundType::COMPARE_SFX);
 				int digit = (sticks[i]->data / exponent) % 10;
 				output[count[digit] - 1] = sticks[i];
+				output[count[digit] - 1]->stick_view->setFillColor(collection_model->temporary_processing_color);
 				count[digit]--;
 				number_of_array_access++;
+				updateStickPosition();
+				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay)); // Delay to observe each placement
 			}
 
-			for (int i = 0; i < sticks.size(); ++i)
-			{
+			// Place elements back into the main array
+			for (int i = 0; i < sticks.size(); ++i) {
 				sticks[i] = output[i];
+				sticks[i]->stick_view->setFillColor(collection_model->placement_position_element_color);  // Final sorted color for this digit
 				updateStickPosition();
+				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay)); // Delay to observe final sorting state
 			}
 		}
 
