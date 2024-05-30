@@ -220,6 +220,63 @@ namespace Gameplay
 			setCompletedColor();  // Optional if you want to re-mark everything, can be redundant
 		}
 
+		void StickCollectionController::merge(int left, int mid, int right)
+		{
+			int k = mid + 1;
+			number_of_array_access += 2;
+			number_of_comparisons++;
+
+			if (sticks[mid]->data <= sticks[k]->data) return;
+
+			while (left <= mid && k <= right)
+			{
+				sticks[left]->stick_view->setFillColor(collection_model->processing_element_color);
+				sticks[k]->stick_view->setFillColor(collection_model->processing_element_color);
+
+				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+				sticks[left]->stick_view->setFillColor(collection_model->element_color);
+				sticks[k]->stick_view->setFillColor(collection_model->element_color);
+
+				number_of_array_access += 2;
+				number_of_comparisons++;
+
+				if (sticks[left]->data <= sticks[k]->data) left++;
+				else
+				{
+					Stick* key = sticks[k];
+					for (int i = k; i != left; --i)
+					{
+						sticks[i] = sticks[i - 1];
+						number_of_array_access += 2;
+					}
+
+					sticks[left] = key;
+					updateStickPosition();
+
+					left++;
+					mid++;
+					k++;
+				}
+			}
+		}
+
+		void StickCollectionController::mergeSort(int left, int right)
+		{
+			if (left >= right) return;
+			int mid = left + (right - left) / 2;
+
+			mergeSort(left, mid);
+			mergeSort(mid + 1, right);
+			merge(left, mid, right);
+			setCompletedColor();
+		}
+
+		void StickCollectionController::processMergeSort()
+		{
+			mergeSort(0, sticks.size() - 1);
+		}
+
+
 		void StickCollectionController::setCompletedColor()
 		{
 			for (int k = 0; k < sticks.size(); k++)
@@ -305,7 +362,11 @@ namespace Gameplay
 				break;
 			case Gameplay::Collection::SortType::SELECTION_SORT:
 				time_complexity = "O(n^2)";
-				sort_thread = std::thread(&StickCollectionController::processInsertionSort, this);
+				sort_thread = std::thread(&StickCollectionController::processSelectionSort, this);
+				break;
+			case Gameplay::Collection::SortType::MERGE_SORT:
+				time_complexity = "O(n Log n)";
+				sort_thread = std::thread(&StickCollectionController::processMergeSort, this);
 				break;
 			}
 		}
