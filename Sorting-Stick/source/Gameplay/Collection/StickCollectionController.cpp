@@ -353,6 +353,53 @@ namespace Gameplay
 			setCompletedColor();
 		}
 
+		void StickCollectionController::countSort(int exponent)
+		{
+			std::vector<Stick*> output(sticks.size());
+			std::vector<int> count(10, 0);
+
+			for (int i = 0; i < sticks.size(); ++i)
+			{
+				int digit = (sticks[i]->data / exponent) % 10;
+				count[digit]++;
+				number_of_array_access++;
+			}
+
+			for (int i = 1; i < 10; ++i) count[i] += count[i - 1];
+			for (int i = sticks.size() - 1; i >= 0; --i)
+			{
+				sticks[i]->stick_view->setFillColor(collection_model->processing_element_color);
+				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+				sticks[i]->stick_view->setFillColor(collection_model->element_color);
+
+				int digit = (sticks[i]->data / exponent) % 10;
+				output[count[digit] - 1] = sticks[i];
+				count[digit]--;
+				number_of_array_access++;
+			}
+
+			for (int i = 0; i < sticks.size(); ++i)
+			{
+				sticks[i] = output[i];
+				updateStickPosition();
+			}
+		}
+
+		void StickCollectionController::radixSort()
+		{
+			int maxElement = INT_MIN;
+			const int size = sticks.size();
+
+			for (int i = 0; i < size; ++i) maxElement = std::max(sticks[i]->data, maxElement);
+			for (int exponent = 1; maxElement / exponent > 0; exponent *= 10) countSort(exponent);
+		}
+
+		void StickCollectionController::processRadixSort()
+		{
+			radixSort();
+			setCompletedColor();
+		}
+
 
 
 		void StickCollectionController::setCompletedColor()
@@ -449,6 +496,10 @@ namespace Gameplay
 			case Gameplay::Collection::SortType::QUICK_SORT:
 				time_complexity = "O(n Log n)";
 				sort_thread = std::thread(&StickCollectionController::processQuickSort, this);
+				break;
+			case Gameplay::Collection::SortType::RADIX_SORT:
+				time_complexity = "O(w*(n+k))";
+				sort_thread = std::thread(&StickCollectionController::processRadixSort, this);
 				break;
 			}
 		}
