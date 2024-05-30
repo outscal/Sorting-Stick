@@ -222,41 +222,56 @@ namespace Gameplay
 
 		void StickCollectionController::merge(int left, int mid, int right)
 		{
-			int k = mid + 1;
-			number_of_array_access += 2;
-			number_of_comparisons++;
+			SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
+			std::vector<Stick*> temp(right - left + 1);  // Temporary vector to hold pointers
+			int i = left, j = mid + 1, k = 0;
 
-			if (sticks[mid]->data <= sticks[k]->data) return;
+			// Copy pointers from the original sticks array to temp
+			for (int index = left; index <= right; ++index) {
+				temp[k++] = sticks[index];
+				sticks[index]->stick_view->setFillColor(collection_model->temporary_processing_color);  // Temporary color
+				number_of_array_access++;
+			}
 
-			while (left <= mid && k <= right)
-			{
-				sticks[left]->stick_view->setFillColor(collection_model->processing_element_color);
-				sticks[k]->stick_view->setFillColor(collection_model->processing_element_color);
+			i = 0; // reset i to start of temp
+			j = mid - left + 1; // adjust j to start of second half in temp
+			k = left; // reset k to left to start filling the main array
 
-				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
-				sticks[left]->stick_view->setFillColor(collection_model->element_color);
-				sticks[k]->stick_view->setFillColor(collection_model->element_color);
-
-				number_of_array_access += 2;
+			while (i < mid - left + 1 && j < temp.size()) {
+				sound->playSound(SoundType::COMPARE_SFX);  // Play sound at compare
 				number_of_comparisons++;
-
-				if (sticks[left]->data <= sticks[k]->data) left++;
-				else
-				{
-					Stick* key = sticks[k];
-					for (int i = k; i != left; --i)
-					{
-						sticks[i] = sticks[i - 1];
-						number_of_array_access += 2;
-					}
-
-					sticks[left] = key;
-					updateStickPosition();
-
-					left++;
-					mid++;
-					k++;
+				if (temp[i]->data <= temp[j]->data) {
+					sticks[k] = temp[i++];
 				}
+				else {
+					sticks[k] = temp[j++];
+					sticks[k]->stick_view->setFillColor(collection_model->selected_element_color);  // Highlight the selected element
+					updateStickPosition();
+					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+				}
+				number_of_array_access++; // Access for reassigning from temp
+				sticks[k]->stick_view->setFillColor(collection_model->processing_element_color);  // Processing color
+				updateStickPosition();
+				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+				k++;
+			}
+
+			// Copy remaining elements of left half, if any
+			while (i < mid - left + 1) {
+				sticks[k] = temp[i++];
+				sticks[k]->stick_view->setFillColor(collection_model->selected_element_color);  // Use selected color during merge
+				updateStickPosition();
+				number_of_array_access++; // Access for reassigning remaining elements
+				k++;
+			}
+
+			// Copy remaining elements of right half, if any
+			while (j < temp.size()) {
+				sticks[k] = temp[j++];
+				sticks[k]->stick_view->setFillColor(collection_model->selected_element_color);  // Sorted color
+				updateStickPosition();
+				number_of_array_access++; // Access for reassigning remaining elements
+				k++;
 			}
 		}
 
@@ -268,12 +283,17 @@ namespace Gameplay
 			mergeSort(left, mid);
 			mergeSort(mid + 1, right);
 			merge(left, mid, right);
-			setCompletedColor();
 		}
 
 		void StickCollectionController::processMergeSort()
 		{
 			mergeSort(0, sticks.size() - 1);
+
+			if (current_operation_delay != 0)
+			{
+				setCompletedColor(); //set all sticks green (dramatic effect)
+			}
+
 		}
 
 
