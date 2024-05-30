@@ -298,11 +298,14 @@ namespace Gameplay
 
 		int StickCollectionController::partition(int left, int right)
 		{
-			sticks[right]->stick_view->setFillColor(collection_model->placement_position_element_color);
+			
+			sticks[right]->stick_view->setFillColor(collection_model->selected_element_color);
 			int i = left - 1;
+			SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
 
 			for (int j = left; j < right; ++j)
 			{
+				
 				sticks[j]->stick_view->setFillColor(collection_model->processing_element_color);
 				number_of_array_access += 2;
 				number_of_comparisons++;
@@ -310,22 +313,25 @@ namespace Gameplay
 				if (sticks[j]->data < sticks[right]->data)
 				{
 					++i;
-					sticks[i]->stick_view->setFillColor(collection_model->processing_element_color);
-					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
 					std::swap(sticks[i], sticks[j]);
-					updateStickPosition();
 					number_of_array_access += 3;
+					sound->playSound(SoundType::COMPARE_SFX);
 
-					sticks[i]->stick_view->setFillColor(collection_model->element_color);
+					
+					updateStickPosition();
+					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
 				}
 
+				// Reset the color of the processed element if it's not swapped
 				sticks[j]->stick_view->setFillColor(collection_model->element_color);
 			}
 
-			sticks[right]->stick_view->setFillColor(collection_model->element_color);
 			std::swap(sticks[i + 1], sticks[right]);
-			updateStickPosition();
 			number_of_array_access += 3;
+
+			// Final placement color for the pivot
+			sticks[i + 1]->stick_view->setFillColor(collection_model->placement_position_element_color);
+			updateStickPosition();
 			return i + 1;
 		}
 
@@ -441,6 +447,7 @@ namespace Gameplay
 				sort_thread = std::thread(&StickCollectionController::processMergeSort, this);
 				break;
 			case Gameplay::Collection::SortType::QUICK_SORT:
+				time_complexity = "O(n Log n)";
 				sort_thread = std::thread(&StickCollectionController::processQuickSort, this);
 				break;
 			}
