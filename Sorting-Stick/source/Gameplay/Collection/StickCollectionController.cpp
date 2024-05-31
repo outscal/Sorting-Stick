@@ -369,7 +369,7 @@ namespace Gameplay
 				number_of_array_access++;
 				sticks[i]->stick_view->setFillColor(collection_model->processing_element_color);
 				updateStickPosition();
-				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay)); // Delay for visual processing
+				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay / 2)); // Delay for visual processing
 				sticks[i]->stick_view->setFillColor(collection_model->element_color);  // Reset color after processing
 			}
 
@@ -380,14 +380,13 @@ namespace Gameplay
 
 			// Sorting based on the current digit
 			for (int i = sticks.size() - 1; i >= 0; --i) {
-				sound->playSound(SoundType::COMPARE_SFX);
+
 				int digit = (sticks[i]->data / exponent) % 10;
 				output[count[digit] - 1] = sticks[i];
 				output[count[digit] - 1]->stick_view->setFillColor(collection_model->temporary_processing_color);
 				count[digit]--;
 				number_of_array_access++;
 				updateStickPosition();
-				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay)); // Delay to observe each placement
 			}
 
 			// Place elements back into the main array
