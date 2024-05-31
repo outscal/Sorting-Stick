@@ -146,7 +146,7 @@ namespace Gameplay
 				Stick* key = sticks[i];
 				number_of_array_access++; // Access for key stick
 
-				sound->playSound(SoundType::COMPARE_SFX);
+				//sound->playSound(SoundType::COMPARE_SFX);
 
 				key->stick_view->setFillColor(collection_model->processing_element_color); // Current key is red
 				updateStickPosition(); // Update to show the key in red
@@ -160,19 +160,22 @@ namespace Gameplay
 
 					sticks[j + 1] = sticks[j];
 					number_of_array_access++; // Access for assigning sticks[j] to sticks[j + 1]
-
-					sticks[j + 1]->stick_view->setFillColor(collection_model->selected_element_color); // Mark as being compared
+					sticks[j + 1]->stick_view->setFillColor(collection_model->processing_element_color); // Mark as being compared
 					j--;
 					sound->playSound(SoundType::COMPARE_SFX);
 					updateStickPosition(); // Visual update
 					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+					sticks[j + 2]->stick_view->setFillColor(collection_model->selected_element_color); // Mark as being compared
+
 				}
 
 				sticks[j + 1] = key;
 				number_of_array_access++; // Access for placing the key in sticks[j + 1]
-				sticks[j + 1]->stick_view->setFillColor(collection_model->placement_position_element_color); // Placed key is green indicating it's sorted
+				sticks[j + 1]->stick_view->setFillColor(collection_model->temporary_processing_color); // Placed key is green indicating it's sorted
+				sound->playSound(SoundType::COMPARE_SFX);
 				updateStickPosition(); // Final visual update for this iteration
 				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+				sticks[j + 1]->stick_view->setFillColor(collection_model->selected_element_color); // Placed key is green indicating it's sorted
 			}
 
 			setCompletedColor();
@@ -184,7 +187,7 @@ namespace Gameplay
 			for (int i = 0; i < sticks.size() - 1; ++i)
 			{
 				int min_index = i;
-				sticks[i]->stick_view->setFillColor(collection_model->processing_element_color);  // Mark the start of processing
+				sticks[i]->stick_view->setFillColor(collection_model->selected_element_color);  // Mark the start of processing
 
 				for (int j = i + 1; j < sticks.size(); ++j)
 				{
@@ -199,7 +202,7 @@ namespace Gameplay
 					{
 						if (min_index != i) sticks[min_index]->stick_view->setFillColor(collection_model->element_color);  // Reset previous min
 						min_index = j;
-						sticks[min_index]->stick_view->setFillColor(collection_model->selected_element_color);  // New min found
+						sticks[min_index]->stick_view->setFillColor(collection_model->temporary_processing_color);  // New min found
 					}
 					else
 					{
@@ -222,55 +225,45 @@ namespace Gameplay
 
 		void StickCollectionController::merge(int left, int mid, int right)
 		{
-			SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
-			std::vector<Stick*> temp(right - left + 1);  // Temporary vector to hold pointers
+			std::vector<Stick*> temp(right - left + 1);
 			int i = left, j = mid + 1, k = 0;
 
-			// Copy pointers from the original sticks array to temp
+			// Copy elements to the temporary array
 			for (int index = left; index <= right; ++index) {
 				temp[k++] = sticks[index];
-				sticks[index]->stick_view->setFillColor(collection_model->temporary_processing_color);  // Temporary color
-				number_of_array_access++;
+				sticks[index]->stick_view->setFillColor(collection_model->temporary_processing_color);
+				updateStickPosition();
 			}
 
-			i = 0; // reset i to start of temp
-			j = mid - left + 1; // adjust j to start of second half in temp
-			k = left; // reset k to left to start filling the main array
+			i = 0;  // Start of the first half in temp
+			j = mid - left + 1;  // Start of the second half in temp
+			k = left;  // Start position in the original array to merge back
 
+			// Merge elements back to the original array from temp
 			while (i < mid - left + 1 && j < temp.size()) {
-				sound->playSound(SoundType::COMPARE_SFX);  // Play sound at compare
-				number_of_comparisons++;
 				if (temp[i]->data <= temp[j]->data) {
 					sticks[k] = temp[i++];
 				}
 				else {
 					sticks[k] = temp[j++];
-					sticks[k]->stick_view->setFillColor(collection_model->selected_element_color);  // Highlight the selected element
-					updateStickPosition();
-					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
 				}
-				number_of_array_access++; // Access for reassigning from temp
-				sticks[k]->stick_view->setFillColor(collection_model->processing_element_color);  // Processing color
-				updateStickPosition();
+				sticks[k]->stick_view->setFillColor(collection_model->processing_element_color);
+				updateStickPosition();  // Immediate update after assignment
 				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
 				k++;
 			}
 
-			// Copy remaining elements of left half, if any
-			while (i < mid - left + 1) {
-				sticks[k] = temp[i++];
-				sticks[k]->stick_view->setFillColor(collection_model->selected_element_color);  // Use selected color during merge
-				updateStickPosition();
-				number_of_array_access++; // Access for reassigning remaining elements
-				k++;
-			}
-
-			// Copy remaining elements of right half, if any
-			while (j < temp.size()) {
-				sticks[k] = temp[j++];
-				sticks[k]->stick_view->setFillColor(collection_model->selected_element_color);  // Sorted color
-				updateStickPosition();
-				number_of_array_access++; // Access for reassigning remaining elements
+			// Handle remaining elements from both halves
+			while (i < mid - left + 1 || j < temp.size()) {
+				if (i < mid - left + 1) {
+					sticks[k] = temp[i++];
+				}
+				else {
+					sticks[k] = temp[j++];
+				}
+				sticks[k]->stick_view->setFillColor(collection_model->processing_element_color);
+				updateStickPosition();  // Immediate update
+				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
 				k++;
 			}
 		}
