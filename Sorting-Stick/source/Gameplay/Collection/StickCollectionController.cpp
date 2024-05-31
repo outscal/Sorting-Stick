@@ -295,14 +295,14 @@ namespace Gameplay
 
 		int StickCollectionController::partition(int left, int right)
 		{
-			
+			//set pivot blue
 			sticks[right]->stick_view->setFillColor(collection_model->selected_element_color);
 			int i = left - 1;
 			SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
 
 			for (int j = left; j < right; ++j)
 			{
-				
+
 				sticks[j]->stick_view->setFillColor(collection_model->processing_element_color);
 				number_of_array_access += 2;
 				number_of_comparisons++;
@@ -314,7 +314,7 @@ namespace Gameplay
 					number_of_array_access += 3;
 					sound->playSound(SoundType::COMPARE_SFX);
 
-					
+
 					updateStickPosition();
 					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
 				}
@@ -326,11 +326,10 @@ namespace Gameplay
 			std::swap(sticks[i + 1], sticks[right]);
 			number_of_array_access += 3;
 
-			// Final placement color for the pivot
-			sticks[i + 1]->stick_view->setFillColor(collection_model->placement_position_element_color);
 			updateStickPosition();
 			return i + 1;
 		}
+
 
 		void StickCollectionController::quickSort(int left, int right)
 		{
@@ -340,6 +339,12 @@ namespace Gameplay
 
 				quickSort(left, pivot_index - 1);
 				quickSort(pivot_index + 1, right);
+
+				// Set all elements in this segment to green after sorting is done
+				for (int i = left; i <= right; i++) {
+					sticks[i]->stick_view->setFillColor(collection_model->placement_position_element_color);
+					updateStickPosition();
+				}
 			}
 		}
 
