@@ -187,7 +187,7 @@ namespace Gameplay
 			for (int i = 0; i < sticks.size() - 1; ++i)
 			{
 				int min_index = i;
-				sticks[i]->stick_view->setFillColor(collection_model->processing_element_color);  // Mark the start of processing
+				sticks[i]->stick_view->setFillColor(collection_model->selected_element_color);  // Mark the start of processing
 
 				for (int j = i + 1; j < sticks.size(); ++j)
 				{
@@ -202,7 +202,7 @@ namespace Gameplay
 					{
 						if (min_index != i) sticks[min_index]->stick_view->setFillColor(collection_model->element_color);  // Reset previous min
 						min_index = j;
-						sticks[min_index]->stick_view->setFillColor(collection_model->selected_element_color);  // New min found
+						sticks[min_index]->stick_view->setFillColor(collection_model->temporary_processing_color);  // New min found
 					}
 					else
 					{
