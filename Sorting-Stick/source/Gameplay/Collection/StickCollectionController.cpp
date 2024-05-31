@@ -225,6 +225,8 @@ namespace Gameplay
 
 		void StickCollectionController::merge(int left, int mid, int right)
 		{
+			SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
+
 			std::vector<Stick*> temp(right - left + 1);
 			int i = left, j = mid + 1, k = 0;
 
@@ -247,6 +249,7 @@ namespace Gameplay
 				else {
 					sticks[k] = temp[j++];
 				}
+				sound->playSound(SoundType::COMPARE_SFX);
 				sticks[k]->stick_view->setFillColor(collection_model->processing_element_color);
 				updateStickPosition();  // Immediate update after assignment
 				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
@@ -261,6 +264,7 @@ namespace Gameplay
 				else {
 					sticks[k] = temp[j++];
 				}
+				sound->playSound(SoundType::COMPARE_SFX);
 				sticks[k]->stick_view->setFillColor(collection_model->processing_element_color);
 				updateStickPosition();  // Immediate update
 				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
