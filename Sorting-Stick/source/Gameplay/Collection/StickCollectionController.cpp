@@ -118,8 +118,8 @@ namespace Gameplay
 						if (sticks[i - 1]->data > sticks[i]->data) {
 							std::swap(sticks[i - 1], sticks[i]);
 							swapped = true;  // Set swapped to true if there was a swap
-							std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
 						}
+						std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
 
 						sticks[i - 1]->stick_view->setFillColor(collection_model->element_color);
 						sticks[i]->stick_view->setFillColor(collection_model->element_color);
