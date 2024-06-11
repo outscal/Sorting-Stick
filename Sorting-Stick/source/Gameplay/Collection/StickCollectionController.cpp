@@ -101,60 +101,64 @@ namespace Gameplay
 		
 		void StickCollectionController::processBubbleSort()
 		{
-			SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
-			for (int j = 0; j < sticks.size(); j++)
-			{
-				bool swapped = false;  // To track if a swap was made
-				for (int i = 1; i < sticks.size() - j; i++)  // Reduce the range each pass
+			if (current_operation_delay != 0) {
+				SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
+				for (int j = 0; j < sticks.size(); j++)
 				{
-					number_of_array_access += 2;
-					number_of_comparisons++;
-					sound->playSound(SoundType::COMPARE_SFX);
+					bool swapped = false;  // To track if a swap was made
+					for (int i = 1; i < sticks.size() - j; i++)  // Reduce the range each pass
+					{
+						number_of_array_access += 2;
+						number_of_comparisons++;
+						sound->playSound(SoundType::COMPARE_SFX);
 
-					sticks[i - 1]->stick_view->setFillColor(collection_model->processing_element_color);
-					sticks[i]->stick_view->setFillColor(collection_model->processing_element_color);
+						sticks[i - 1]->stick_view->setFillColor(collection_model->processing_element_color);
+						sticks[i]->stick_view->setFillColor(collection_model->processing_element_color);
 
-					if (sticks[i - 1]->data > sticks[i]->data) {
-						std::swap(sticks[i - 1], sticks[i]);
-						swapped = true;  // Set swapped to true if there was a swap
+						if (sticks[i - 1]->data > sticks[i]->data) {
+							std::swap(sticks[i - 1], sticks[i]);
+							swapped = true;  // Set swapped to true if there was a swap
+							std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+						}
+
+						sticks[i - 1]->stick_view->setFillColor(collection_model->element_color);
+						sticks[i]->stick_view->setFillColor(collection_model->element_color);
+						updateStickPosition();
 					}
-					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+					// Set the last sorted stick to green
+					if (sticks.size() - j - 1 >= 0) {
+						sticks[sticks.size() - j - 1]->stick_view->setFillColor(collection_model->placement_position_element_color);
+					}
+					// If no swaps were made, the array is already sorted
+					if (!swapped)
+						break;
+				}
 
-					sticks[i - 1]->stick_view->setFillColor(collection_model->element_color);
-					sticks[i]->stick_view->setFillColor(collection_model->element_color);
-					updateStickPosition();
-				}
-				// Set the last sorted stick to green
-				if (sticks.size() - j - 1 >= 0) {
-					sticks[sticks.size() - j - 1]->stick_view->setFillColor(collection_model->placement_position_element_color);
-				}
-				// If no swaps were made, the array is already sorted
-				if (!swapped)
-					break;
+				setCompletedColor();
 			}
-
-			setCompletedColor();
 		}
 
 		void StickCollectionController::setCompletedColor()
 		{
-			for (int k = 0; k < sticks.size(); k++)
-			{
-				sticks[k]->stick_view->setFillColor(collection_model->element_color);
+			if (color_delay != 0) {
+				for (int k = 0; k < sticks.size(); k++)
+				{
+					sticks[k]->stick_view->setFillColor(collection_model->element_color);
+				}
+				SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
+
+				for (int i = 0; i < sticks.size(); ++i)
+				{
+					sound->playSound(SoundType::COMPARE_SFX);
+					sticks[i]->stick_view->setFillColor(collection_model->placement_position_element_color);
+
+					// Delay to visualize the final color change
+					std::this_thread::sleep_for(std::chrono::milliseconds(color_delay));
+
+				}
+
+				sound->playSound(SoundType::SCREAM);
 			}
-			SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
-
-			for (int i = 0; i < sticks.size(); ++i)
-			{
-				sound->playSound(SoundType::COMPARE_SFX);
-				sticks[i]->stick_view->setFillColor(collection_model->placement_position_element_color);
-
-				// Delay to visualize the final color change
-				std::this_thread::sleep_for(std::chrono::milliseconds(color_delay));
-
-			}
-
-			sound->playSound(SoundType::SCREAM);
 		}
 
 		void StickCollectionController::shuffleSticks()
