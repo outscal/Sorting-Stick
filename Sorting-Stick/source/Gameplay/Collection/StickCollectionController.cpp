@@ -98,6 +98,14 @@ namespace Gameplay
 				sticks[i]->stick_view->setPosition(sf::Vector2f(x_position, y_position));
 			}
 		}
+
+		void StickCollectionController::updateStickPosition(int i)
+		{
+			float x_position = (i * sticks[i]->stick_view->getSize().x) + ((i)*collection_model->elements_spacing);
+			float y_position = collection_model->element_y_position - sticks[i]->stick_view->getSize().y;
+
+			sticks[i]->stick_view->setPosition(sf::Vector2f(x_position, y_position));
+		}
 		
 		void StickCollectionController::processBubbleSort()
 		{
@@ -460,7 +468,7 @@ namespace Gameplay
 				}
 
 
-				updateStickPosition();
+				//updateStickPosition();
 
 				if (current_operation_delay != 0)
 				{
@@ -495,7 +503,7 @@ namespace Gameplay
 
 				count[digit]--;
 
-				updateStickPosition();
+				//updateStickPosition();
 			}
 
 			// Place elements back into the main array
@@ -508,7 +516,7 @@ namespace Gameplay
 					sticks[i]->stick_view->setFillColor(collection_model->placement_position_element_color);  // Final sorted color for this digit
 				}
 
-				updateStickPosition();
+				updateStickPosition(i);
 
 				if (current_operation_delay != 0)
 				{
@@ -516,6 +524,7 @@ namespace Gameplay
 				}
 
 			}
+			//updateStickPosition();
 		}
 
 		void StickCollectionController::radixSort()
