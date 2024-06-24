@@ -468,7 +468,7 @@ namespace Gameplay
 				}
 
 
-				//updateStickPosition();
+				
 
 				if (current_operation_delay != 0)
 				{
@@ -503,7 +503,7 @@ namespace Gameplay
 
 				count[digit]--;
 
-				//updateStickPosition();
+				
 			}
 
 			// Place elements back into the main array
@@ -524,7 +524,7 @@ namespace Gameplay
 				}
 
 			}
-			//updateStickPosition();
+			
 		}
 
 		void StickCollectionController::radixSort()
