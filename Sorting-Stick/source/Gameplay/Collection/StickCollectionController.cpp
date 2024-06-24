@@ -375,25 +375,31 @@ namespace Gameplay
 
 			for (int j = left; j < right; ++j)
 			{
-				if (current_operation_delay == 0)
-				{
-					break;
+				if (current_operation_delay != 0) {
+					sticks[j]->stick_view->setFillColor(collection_model->processing_element_color);
+					number_of_array_access += 2;
+					number_of_comparisons++;
 				}
 
-				sticks[j]->stick_view->setFillColor(collection_model->processing_element_color);
-				number_of_array_access += 2;
-				number_of_comparisons++;
 
 				if (sticks[j]->data < sticks[right]->data)
 				{
 					++i;
 					std::swap(sticks[i], sticks[j]);
-					number_of_array_access += 3;
-					sound->playSound(SoundType::COMPARE_SFX);
+
+					if (current_operation_delay != 0) {
+						number_of_array_access += 3;
+						sound->playSound(SoundType::COMPARE_SFX);
+					}
+
 
 
 					updateStickPosition();
-					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+
+					if (current_operation_delay != 0) {
+						std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+					}
+
 				}
 
 				// Reset the color of the processed element if it's not swapped
@@ -410,13 +416,13 @@ namespace Gameplay
 
 		void StickCollectionController::quickSort(int left, int right)
 		{
-
-			if (current_operation_delay != 0)
+			if (left < right)
 			{
 				int pivot_index = partition(left, right);
 
 				quickSort(left, pivot_index - 1);
 				quickSort(pivot_index + 1, right);
+
 
 				// Set all elements in this segment to green after sorting is done
 				for (int i = left; i <= right; i++) {
@@ -424,20 +430,14 @@ namespace Gameplay
 					updateStickPosition();
 				}
 			}
-
 		}
 
 		void StickCollectionController::processQuickSort()
 		{
-			if (current_operation_delay != 0)
-			{
-				quickSort(0, sticks.size() - 1);
-			}
-
+			quickSort(0, sticks.size() - 1);
 
 			if (current_operation_delay != 0)
 			{
-
 				setCompletedColor();
 			}
 
