@@ -100,6 +100,14 @@ namespace Gameplay
 			}
 		}
 
+		void StickCollectionController::updateStickPosition(int i)
+		{
+			float x_position = (i * sticks[i]->stick_view->getSize().x) + ((i)*collection_model->elements_spacing);
+			float y_position = collection_model->element_y_position - sticks[i]->stick_view->getSize().y;
+
+			sticks[i]->stick_view->setPosition(sf::Vector2f(x_position, y_position));
+		}
+
 		void StickCollectionController::processBubbleSort()
 		{
 
@@ -395,7 +403,6 @@ namespace Gameplay
 				count[digit]++;
 				number_of_array_access++;
 				sticks[i]->stick_view->setFillColor(collection_model->processing_element_color);
-				updateStickPosition();
 				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay / 2)); // Delay for visual processing
 				sticks[i]->stick_view->setFillColor(collection_model->element_color);  // Reset color after processing
 			}
@@ -413,14 +420,14 @@ namespace Gameplay
 				output[count[digit] - 1]->stick_view->setFillColor(collection_model->temporary_processing_color);
 				count[digit]--;
 				number_of_array_access++;
-				updateStickPosition();
+				
 			}
 
 			// Place elements back into the main array
 			for (int i = 0; i < sticks.size(); ++i) {
 				sticks[i] = output[i];
 				sticks[i]->stick_view->setFillColor(collection_model->placement_position_element_color);  // Final sorted color for this digit
-				updateStickPosition();
+				updateStickPosition(i);
 				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay)); // Delay to observe final sorting state
 			}
 		}

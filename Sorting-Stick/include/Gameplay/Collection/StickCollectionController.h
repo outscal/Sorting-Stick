@@ -38,6 +38,7 @@ namespace Gameplay
             float calculateStickHeight(int array_pos);
 
             void updateStickPosition();
+            void updateStickPosition(int i);
             void shuffleSticks();
             bool compareSticksByData(const Stick* a, const Stick* b) const;
 
