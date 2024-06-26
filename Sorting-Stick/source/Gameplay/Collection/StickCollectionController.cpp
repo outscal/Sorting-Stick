@@ -273,10 +273,12 @@ namespace Gameplay
 				else {
 					sticks[k] = temp[j++];
 				}
+
 				sound->playSound(SoundType::COMPARE_SFX);
 				sticks[k]->stick_view->setFillColor(collection_model->processing_element_color);
 				updateStickPosition();  // Immediate update after assignment
 				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+
 				k++;
 			}
 
@@ -288,10 +290,12 @@ namespace Gameplay
 				else {
 					sticks[k] = temp[j++];
 				}
+
 				sound->playSound(SoundType::COMPARE_SFX);
 				sticks[k]->stick_view->setFillColor(collection_model->processing_element_color);
 				updateStickPosition();  // Immediate update
 				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+
 				k++;
 			}
 		}
@@ -310,10 +314,9 @@ namespace Gameplay
 		{
 			mergeSort(0, sticks.size() - 1);
 
-			if (current_operation_delay != 0)
-			{
-				setCompletedColor(); //set all sticks green (dramatic effect)
-			}
+			
+			setCompletedColor(); 
+			
 
 		}
 
