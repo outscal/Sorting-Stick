@@ -11,6 +11,7 @@ namespace Gameplay
         class StickCollectionModel;
         struct Stick;
         enum class SortType;
+        enum class SortState;
 
         class StickCollectionController
         {
@@ -20,6 +21,7 @@ namespace Gameplay
 
             std::vector<Stick*> sticks;
             SortType sort_type;
+            SortState sort_state;
 
             std::thread sort_thread;
 
