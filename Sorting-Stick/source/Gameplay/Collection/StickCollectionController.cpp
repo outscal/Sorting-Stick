@@ -119,36 +119,35 @@ namespace Gameplay
 					number_of_comparisons++;
 					sound->playSound(SoundType::COMPARE_SFX);
 
-						sticks[i - 1]->stick_view->setFillColor(collection_model->processing_element_color);
-						sticks[i]->stick_view->setFillColor(collection_model->processing_element_color);
+					sticks[i - 1]->stick_view->setFillColor(collection_model->processing_element_color);
+					sticks[i]->stick_view->setFillColor(collection_model->processing_element_color);
 
-						if (sticks[i - 1]->data > sticks[i]->data) {
-							std::swap(sticks[i - 1], sticks[i]);
-							swapped = true;  // Set swapped to true if there was a swap
-						}
-						std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+					if (sticks[i - 1]->data > sticks[i]->data) {
+						std::swap(sticks[i - 1], sticks[i]);
+						swapped = true;  // Set swapped to true if there was a swap
+					}
+					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
 
-						sticks[i - 1]->stick_view->setFillColor(collection_model->element_color);
-						sticks[i]->stick_view->setFillColor(collection_model->element_color);
-						updateStickPosition();
-					}
-					// Set the last sorted stick to green
-					if (sticks.size() - j - 1 >= 0) {
-						sticks[sticks.size() - j - 1]->stick_view->setFillColor(collection_model->placement_position_element_color);
-					}
-					// If no swaps were made, the array is already sorted
-					if (!swapped)
-						break;
+					sticks[i - 1]->stick_view->setFillColor(collection_model->element_color);
+					sticks[i]->stick_view->setFillColor(collection_model->element_color);
+					updateStickPosition();
 				}
-
-				setCompletedColor();
+				// Set the last sorted stick to green
+				if (sticks.size() - j - 1 >= 0) {
+					sticks[sticks.size() - j - 1]->stick_view->setFillColor(collection_model->placement_position_element_color);
+				}
+				// If no swaps were made, the array is already sorted
+				if (!swapped)
+					break;
 			}
+
+			setCompletedColor();
+
 		}
 
 		void StickCollectionController::processInsertionSort()
 		{
-			if (current_operation_delay != 0) {
-				SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
+			SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
 
 			for (int i = 1; i < sticks.size(); ++i)
 			{
@@ -164,53 +163,57 @@ namespace Gameplay
 
 				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
 
-				sticks[j + 2]->stick_view->setFillColor(collection_model->selected_element_color); // Mark as being compared
+				while (j >= 0 && sticks[j]->data > key->data)
+				{
 
-								
+					if (sort_state == SortState::NOT_SORTING) { break; }
 
-					while (j >= 0 && sticks[j]->data > key->data)
-					{
+					number_of_comparisons++;
+					number_of_array_access++;
 
-						if (sort_state == SortState::NOT_SORTING) { break; }
-						
-						number_of_comparisons++;
-						number_of_array_access++; // Access for comparing sticks[j]->data with key->data
-
-						sticks[j + 1] = sticks[j];
-						number_of_array_access++; // Access for assigning sticks[j] to sticks[j + 1]
-						sticks[j + 1]->stick_view->setFillColor(collection_model->processing_element_color); // Mark as being compared
-						j--;
-						sound->playSound(SoundType::COMPARE_SFX);
-						updateStickPosition(); // Visual update
-						std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
-						sticks[j + 2]->stick_view->setFillColor(collection_model->selected_element_color); // Mark as being compared
-
-					}
-
-					sticks[j + 1] = key;
-					number_of_array_access++; // Access for placing the key in sticks[j + 1]
-					sticks[j + 1]->stick_view->setFillColor(collection_model->temporary_processing_color); 
+					sticks[j + 1] = sticks[j];
+					number_of_array_access++; // Access for assigning sticks[j] to sticks[j + 1]
+					sticks[j + 1]->stick_view->setFillColor(collection_model->processing_element_color); // Mark as being compared
+					j--;
 					sound->playSound(SoundType::COMPARE_SFX);
-					updateStickPosition(); // Final visual update for this iteration
-					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
-					sticks[j + 1]->stick_view->setFillColor(collection_model->selected_element_color); // Placed key is green indicating it's sorted
-				
+					updateStickPosition(); // Visual update
 
-					setCompletedColor();
+					std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+
+					sticks[j + 2]->stick_view->setFillColor(collection_model->selected_element_color); // Mark as being compared
+
+				}
+
+				sticks[j + 1] = key;
+				number_of_array_access++;
+				sticks[j + 1]->stick_view->setFillColor(collection_model->temporary_processing_color); // Placed key is green indicating it's sorted
+				sound->playSound(SoundType::COMPARE_SFX);
+				updateStickPosition(); // Final visual update for this iteration
+				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+				sticks[j + 1]->stick_view->setFillColor(collection_model->selected_element_color); // Placed key is green indicating it's sorted
 			}
+
+			setCompletedColor();
 		}
 
 		void StickCollectionController::processSelectionSort()
 		{
-			if (current_operation_delay != 0) {
+			
 				SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
+
 				for (int i = 0; i < sticks.size() - 1; ++i)
 				{
+
+					if (sort_state == SortState::NOT_SORTING) { break; }
+
 					int min_index = i;
 					sticks[i]->stick_view->setFillColor(collection_model->selected_element_color);  // Mark the start of processing
 
 					for (int j = i + 1; j < sticks.size(); ++j)
 					{
+
+						if (sort_state == SortState::NOT_SORTING) { break; }
+
 						number_of_array_access += 2;
 						number_of_comparisons++;
 
@@ -241,7 +244,7 @@ namespace Gameplay
 				sticks[sticks.size() - 1]->stick_view->setFillColor(collection_model->placement_position_element_color);
 
 				setCompletedColor();  // Optional if you want to re-mark everything, can be redundant
-			}
+			
 		}
 
 
