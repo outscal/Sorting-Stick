@@ -313,11 +313,7 @@ namespace Gameplay
 		void StickCollectionController::processMergeSort()
 		{
 			mergeSort(0, sticks.size() - 1);
-
-			
-			setCompletedColor(); 
-			
-
+			setCompletedColor();
 		}
 
 
