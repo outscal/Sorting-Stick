@@ -57,6 +57,12 @@ namespace Gameplay
             void processMergeSort();
             void processQuickSort();
 
+            void inPlaceMerge(int left, int mid, int right);
+
+            void inPlaceMergeSort(int left, int right);
+
+            void processInPlaceMergeSort();
+
             void setCompletedColor();
 
             bool isCollectionSorted();
