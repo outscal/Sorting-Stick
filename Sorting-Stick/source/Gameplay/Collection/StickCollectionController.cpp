@@ -247,6 +247,7 @@ namespace Gameplay
 			
 		}
 
+		// Out-of-Place Merge function
 		void StickCollectionController::merge(int left, int mid, int right)
 		{
 			SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
@@ -257,6 +258,7 @@ namespace Gameplay
 			// Copy elements to the temporary array
 			for (int index = left; index <= right; ++index) {
 				temp[k++] = sticks[index];
+				number_of_array_access++;
 				sticks[index]->stick_view->setFillColor(collection_model->temporary_processing_color);
 				updateStickPosition();
 			}
@@ -267,11 +269,15 @@ namespace Gameplay
 
 			// Merge elements back to the original array from temp
 			while (i < mid - left + 1 && j < temp.size()) {
+				number_of_comparisons++;
+				number_of_array_access += 2;
 				if (temp[i]->data <= temp[j]->data) {
 					sticks[k] = temp[i++];
+					number_of_array_access++;
 				}
 				else {
 					sticks[k] = temp[j++];
+					number_of_array_access++;
 				}
 
 				sound->playSound(SoundType::COMPARE_SFX);
@@ -284,6 +290,7 @@ namespace Gameplay
 
 			// Handle remaining elements from both halves
 			while (i < mid - left + 1 || j < temp.size()) {
+				number_of_array_access++;
 				if (i < mid - left + 1) {
 					sticks[k] = temp[i++];
 				}
@@ -300,6 +307,7 @@ namespace Gameplay
 			}
 		}
 
+		// Out-of-Place Merge Sort function
 		void StickCollectionController::mergeSort(int left, int right)
 		{
 			if (left >= right) return;
@@ -310,11 +318,84 @@ namespace Gameplay
 			merge(left, mid, right);
 		}
 
+		// Process Out-of-Place Merge Sort function
 		void StickCollectionController::processMergeSort()
 		{
 			mergeSort(0, sticks.size() - 1);
 			setCompletedColor();
 		}
+
+
+		// In-Place Merge function
+		void StickCollectionController::inPlaceMerge(int left, int mid, int right)
+		{
+			SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
+			int start2 = mid + 1;
+
+			// If the direct merge is already sorted
+			if (sticks[mid]->data <= sticks[start2]->data) {
+				number_of_comparisons++;
+				number_of_array_access += 2;
+				return;
+			}
+
+			// Two pointers to maintain start of both arrays to merge
+			while (left <= mid && start2 <= right) {
+				number_of_comparisons++;
+				number_of_array_access += 2;
+				if (sticks[left]->data <= sticks[start2]->data) {
+					left++;
+				}
+				else {
+					Stick* value = sticks[start2];
+					int index = start2;
+
+					// Shift all the elements between element 1 and element 2, right by 1.
+					while (index != left) {
+						sticks[index] = sticks[index - 1];
+						index--;
+						number_of_array_access += 2;
+					}
+					sticks[left] = value;
+					number_of_array_access++;
+
+					// Update all the pointers
+					left++;
+					mid++;
+					start2++;
+
+					// Visual updates for position changes
+					updateStickPosition();
+				}
+
+				// Instant color change
+				sound->playSound(SoundType::COMPARE_SFX);
+				sticks[left - 1]->stick_view->setFillColor(collection_model->processing_element_color);
+				std::this_thread::sleep_for(std::chrono::milliseconds(current_operation_delay));
+				sticks[left - 1]->stick_view->setFillColor(collection_model->element_color);
+			}
+		}
+
+		// In-Place Merge Sort function
+		void StickCollectionController::inPlaceMergeSort(int left, int right)
+		{
+			if (left < right) {
+				int mid = left + (right - left) / 2;
+
+				inPlaceMergeSort(left, mid);
+				inPlaceMergeSort(mid + 1, right);
+				inPlaceMerge(left, mid, right);
+			}
+		}
+
+		// Process In-Place Merge Sort function
+		void StickCollectionController::processInPlaceMergeSort()
+		{
+			inPlaceMergeSort(0, sticks.size() - 1);
+			setCompletedColor();
+		}
+	
+	
 
 
 		void StickCollectionController::setCompletedColor()
@@ -426,7 +507,7 @@ namespace Gameplay
 				break;
 			case Gameplay::Collection::SortType::MERGE_SORT:
 				time_complexity = "O(n Log n)";
-				sort_thread = std::thread(&StickCollectionController::processMergeSort, this);
+				sort_thread = std::thread(&StickCollectionController::processInPlaceMergeSort, this);
 				break;
 			}
 		}
