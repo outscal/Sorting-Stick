@@ -253,7 +253,7 @@ namespace Gameplay
 			SoundService* sound = Global::ServiceLocator::getInstance()->getSoundService();
 
 			std::vector<Stick*> temp(right - left + 1);
-			int i = left, j = mid + 1, k = 0;
+			int k = 0;
 
 			// Copy elements to the temporary array
 			for (int index = left; index <= right; ++index) {
@@ -263,8 +263,8 @@ namespace Gameplay
 				updateStickPosition();
 			}
 
-			i = 0;  // Start of the first half in temp
-			j = mid - left + 1;  // Start of the second half in temp
+			int i = 0;  // Start of the first half in temp
+			int j = mid - left + 1;  // Start of the second half in temp
 			k = left;  // Start position in the original array to merge back
 
 			// Merge elements back to the original array from temp
@@ -507,7 +507,7 @@ namespace Gameplay
 				break;
 			case Gameplay::Collection::SortType::MERGE_SORT:
 				time_complexity = "O(n Log n)";
-				sort_thread = std::thread(&StickCollectionController::processInPlaceMergeSort, this);
+				sort_thread = std::thread(&StickCollectionController::processMergeSort, this);
 				break;
 			}
 		}
