@@ -56,6 +56,8 @@ namespace UI
 
 			void destroy();
 
+			void changeGameStateToGameplay();
+
 		public:
 			MainMenuUIController();
 			~MainMenuUIController();
