@@ -14,7 +14,10 @@ namespace Gameplay
             QUICK_SORT,
             RADIX_SORT,
         };
-
+        enum class SortingState {
+            Sorting,
+            NotSorting,
+        };
         class StickCollectionModel
         {
         public:
@@ -29,7 +32,8 @@ namespace Gameplay
             const sf::Color placement_position_element_color = sf::Color::Green;
             const sf::Color selected_element_color = sf::Color::Blue;
 
-            const long operation_delay = 150;
+            const long operation_delay = 10;
+            const int colorDelay = 10;
 
             StickCollectionModel();
             ~StickCollectionModel();
